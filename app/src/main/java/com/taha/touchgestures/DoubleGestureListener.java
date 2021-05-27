@@ -9,17 +9,13 @@ public class DoubleGestureListener {
     public final int DOUBLE_SINGLE_TAP_CONFIRMED = 3;
     public final int DOUBLE_HOLD_DOWN_BUTTON = 4;
 
-    private final long MINIMUM_TOUCH_DURATION = 500;
-    private MotionEvent mEvent;
+    private static int mAction;
 
-    private int mAction;
+    private MotionEvent mEvent;
+    private final long MAXIMUM_TOUCH_DURATION = 500;
     private long mPreviousTapTime = 0;
     private long mFirstSingleTapTime = 0;
     private long mSecondSingleTapTime = 0;
-
-    public DoubleGestureListener(MotionEvent event) {
-        onTouchEvent(event);
-    }
 
     public DoubleGestureListener() {
         onTouchEvent(null);
@@ -65,7 +61,6 @@ public class DoubleGestureListener {
         }
     }
 
-
     public int getEvent() {
         try {
             if (mEvent.getAction() == MotionEvent.ACTION_POINTER_UP) {
@@ -74,7 +69,7 @@ public class DoubleGestureListener {
                 System.out.println("DEBUGGING TAG tap difference: " + getTapDifference());
                 System.out.println("DEBUGGING TAG time difference between up and down: " + Math.abs(this.mEvent.getDownTime() - this.mEvent.getEventTime()));
 
-                if (Math.abs(this.mEvent.getDownTime() - this.mEvent.getEventTime()) <= MINIMUM_TOUCH_DURATION) {
+                if (Math.abs(this.mEvent.getDownTime() - this.mEvent.getEventTime()) <= MAXIMUM_TOUCH_DURATION) {
 
                     if (getTapDifference() == -1) {
                         System.out.println("DEBUGGING TAG:  previous tap:" + getTapDifference());
@@ -83,14 +78,14 @@ public class DoubleGestureListener {
                         setFirstSingleTapTime(getCurrentTime());
                         System.out.println("DEBUGGING TAG 1:" + this.getActionMasked());
 
-                    } else if (getTapDifference() > MINIMUM_TOUCH_DURATION) {
+                    } else if (getTapDifference() > MAXIMUM_TOUCH_DURATION) {
                         System.out.println("DEBUGGING TAG:  previous tap:" + getTapDifference());
                         setPreviousTapTime(mEvent.getEventTime());
                         setFirstSingleTapTime(getCurrentTime());
                         setAction(DOUBLE_SINGLE_TAP);
                         System.out.println("DEBUGGING TAG 1:" + this.getActionMasked());
 
-                    } else if (getTapDifference() <= MINIMUM_TOUCH_DURATION) {
+                    } else if (getTapDifference() <= MAXIMUM_TOUCH_DURATION) {
                         setAction(DOUBLE_DOUBLE_TAP);
                         System.out.println("DEBUGGING TAG: previous tap:" + getTapDifference());
                         System.out.println("DEBUGGING TAG 3:" + this.getActionMasked());
@@ -98,11 +93,11 @@ public class DoubleGestureListener {
                         setPreviousTapTime(0);
                     }
 
-                    if(this.mAction == DOUBLE_SINGLE_TAP){
+                    if (mAction == DOUBLE_SINGLE_TAP) {
                         System.out.println("DEBUGGING TAG: checking for single tap confirmation:");
                         System.out.println("DEBUGGING TAG: first tap: " + getFirstSingleTapTime());
                         System.out.println("DEBUGGING TAG: second tap: " + getSecondSingleTapTime());
-                        if(getSecondSingleTapTime() - getFirstSingleTapTime() > MINIMUM_TOUCH_DURATION || getSecondSingleTapTime() == 0){
+                        if (getSecondSingleTapTime() - getFirstSingleTapTime() > MAXIMUM_TOUCH_DURATION || getSecondSingleTapTime() == 0) {
                             setAction(DOUBLE_SINGLE_TAP_CONFIRMED);
                         }
                     }

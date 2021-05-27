@@ -1,73 +1,131 @@
 package com.taha.touchgestures;
 
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-class TripleGestureListener implements
-        GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener {
+class TripleGestureListener {
+    private static int mAction;
+    public final int NO_ACTION = 0;
+    public final int TRIPLE_SINGLE_TAP = 1;
+    public final int TRIPLE_DOUBLE_TAP = 2;
+    public final int TRIPLE_SINGLE_TAP_CONFIRMED = 3;
+    public final int TRIPLE_HOLD_DOWN_BUTTON = 4;
+    private final long MAXIMUM_TOUCH_DURATION = 500;
+    private MotionEvent mEvent;
+    private long mPreviousTapTime = 0;
+    private long mFirstSingleTapTime = 0;
+    private long mSecondSingleTapTime = 0;
 
-    @Override
-    public boolean onDown(MotionEvent motionEvent) {
-        return false;
+    public TripleGestureListener() {
+        onTouchEvent(null);
     }
 
-    @Override
-    public void onShowPress(MotionEvent motionEvent) {
-
+    public void onTouchEvent(MotionEvent event) {
+        if (event != null) this.mEvent = event;
     }
 
-    @Override
-    public boolean onSingleTapUp(MotionEvent motionEvent) {
-        return false;
+    public long getPreviousTapTime() {
+        return mPreviousTapTime;
     }
 
-    @Override
-    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        return false;
+    public void setPreviousTapTime(long previousTapTime) {
+        mPreviousTapTime = previousTapTime;
     }
 
-    @Override
-    public void onLongPress(MotionEvent motionEvent) {
-        MainActivity.announce("Triple long tap confirmed");
+    public long getFirstSingleTapTime() {
+        return mFirstSingleTapTime;
     }
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (Math.abs(velocityX) > 2 * Math.abs(velocityY)) {
-            if (velocityX > 0) {
-                //swipe right
-                MainActivity.announce("Triple fling right");
-            } else {
-                //swipe left
-                MainActivity.announce("Triple fling left");
-            }
-        } else if (Math.abs(velocityY) > 2 * Math.abs(velocityX)) {
-            if (velocityY > 0) {
-                //swipe down
-                MainActivity.announce("Triple fling down");
-            } else {
-                //swipe up
-                MainActivity.announce("Triple fling up");
-            }
+    public void setFirstSingleTapTime(long firstSingleTapTime) {
+        mFirstSingleTapTime = firstSingleTapTime;
+    }
+
+    public long getSecondSingleTapTime() {
+        return mSecondSingleTapTime;
+    }
+
+    public void setSecondSingleTapTime(long secondSingleTapTime) {
+        mSecondSingleTapTime = secondSingleTapTime;
+    }
+
+    public long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
+
+    public long getTapDifference() {
+        if (getPreviousTapTime() == 0) {
+            return -1;
+        } else {
+            return (this.mEvent.getEventTime() - getPreviousTapTime());
         }
-        return false;
     }
 
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-        MainActivity.announce("Triple single tap confirmed");
-        return false;
+    public int getEvent() {
+        try {
+            if (mEvent.getAction() == MotionEvent.ACTION_POINTER_UP) {
+                System.out.println("\nDEBUGGING TAG event down time: " + (this.mEvent.getDownTime()));
+                System.out.println("DEBUGGING TAG event Time: " + (this.mEvent.getEventTime()));
+                System.out.println("DEBUGGING TAG tap difference: " + getTapDifference());
+                System.out.println("DEBUGGING TAG time difference between up and down: " + Math.abs(this.mEvent.getDownTime() - this.mEvent.getEventTime()));
+
+                if (Math.abs(this.mEvent.getDownTime() - this.mEvent.getEventTime()) <= MAXIMUM_TOUCH_DURATION) {
+
+                    if (getTapDifference() == -1) {
+                        System.out.println("DEBUGGING TAG:  previous tap:" + getTapDifference());
+                        setPreviousTapTime(mEvent.getEventTime());
+                        setAction(TRIPLE_SINGLE_TAP);
+                        setFirstSingleTapTime(getCurrentTime());
+                        System.out.println("DEBUGGING TAG 1:" + this.getActionMasked());
+
+                    } else if (getTapDifference() > MAXIMUM_TOUCH_DURATION) {
+                        System.out.println("DEBUGGING TAG:  previous tap:" + getTapDifference());
+                        setPreviousTapTime(mEvent.getEventTime());
+                        setFirstSingleTapTime(getCurrentTime());
+                        setAction(TRIPLE_SINGLE_TAP);
+                        System.out.println("DEBUGGING TAG 1:" + this.getActionMasked());
+
+                    } else if (getTapDifference() <= MAXIMUM_TOUCH_DURATION) {
+                        setAction(TRIPLE_DOUBLE_TAP);
+                        System.out.println("DEBUGGING TAG: previous tap:" + getTapDifference());
+                        System.out.println("DEBUGGING TAG 3:" + this.getActionMasked());
+                        setSecondSingleTapTime(getCurrentTime());
+                        setPreviousTapTime(0);
+                    }
+
+                    if (mAction == TRIPLE_SINGLE_TAP) {
+                        System.out.println("DEBUGGING TAG: checking for single tap confirmation:");
+                        System.out.println("DEBUGGING TAG: first tap: " + getFirstSingleTapTime());
+                        System.out.println("DEBUGGING TAG: second tap: " + getSecondSingleTapTime());
+                        if (getSecondSingleTapTime() - getFirstSingleTapTime() > MAXIMUM_TOUCH_DURATION || getSecondSingleTapTime() == 0) {
+                            setAction(TRIPLE_SINGLE_TAP_CONFIRMED);
+                        }
+                    }
+
+                } else {
+                    setAction(NO_ACTION);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return mAction;
     }
 
-    @Override
-    public boolean onDoubleTap(MotionEvent motionEvent) {
-        MainActivity.announce("Triple double tap confirmed");
-        return false;
+    public void setAction(int action) {
+        mAction = action;
     }
 
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-        return false;
+    public String getActionMasked() {
+        switch (mAction) {
+            case TRIPLE_SINGLE_TAP:
+                return "TRIPLE_SINGLE_TAP";
+            case TRIPLE_DOUBLE_TAP:
+                return "TRIPLE_DOUBLE_TAP";
+            case TRIPLE_SINGLE_TAP_CONFIRMED:
+                return "TRIPLE_SINGLE_TAP_CONFIRMED";
+            case TRIPLE_HOLD_DOWN_BUTTON:
+                return "TRIPLE_HOLD_DOWN_BUTTON";
+            default:
+                return "NO_ACTION";
+        }
     }
 }

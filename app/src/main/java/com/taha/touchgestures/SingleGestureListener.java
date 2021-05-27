@@ -30,27 +30,37 @@ class SingleGestureListener implements
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
-        MainActivity.announce("single long tap confirmed");
+        MainActivity.lastSingleGesture = System.currentTimeMillis();
+        if (MainActivity.lastSingleGesture - MainActivity.lastTripleGesture > 500 && MainActivity.lastTripleGesture != 0) {
+            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500 && MainActivity.lastDoubleGesture != 0) {
+                MainActivity.announce("single long tap confirmed");
+            }
+        }
         System.out.printf("DEBUGGING TAG: single long tap confirmed");
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (Math.abs(velocityX) > 2 * Math.abs(velocityY)) {
-            if (velocityX > 0) {
-                //swipe right
-                MainActivity.announce("single fling right");
-            } else {
-                //swipe left
-                MainActivity.announce("single fling left");
-            }
-        } else if (Math.abs(velocityY) > 2 * Math.abs(velocityX)) {
-            if (velocityY > 0) {
-                //swipe down
-                MainActivity.announce("single fling down");
-            } else {
-                //swipe up
-                MainActivity.announce("single fling up");
+        MainActivity.lastSingleGesture = System.currentTimeMillis();
+        if (MainActivity.lastSingleGesture - MainActivity.lastTripleGesture > 500 && MainActivity.lastTripleGesture != 0) {
+            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500 && MainActivity.lastDoubleGesture != 0) {
+                if (Math.abs(velocityX) > 2 * Math.abs(velocityY)) {
+                    if (velocityX > 0) {
+                        //swipe right
+                        MainActivity.announce("single fling right");
+                    } else {
+                        //swipe left
+                        MainActivity.announce("single fling left");
+                    }
+                } else if (Math.abs(velocityY) > 2 * Math.abs(velocityX)) {
+                    if (velocityY > 0) {
+                        //swipe down
+                        MainActivity.announce("single fling down");
+                    } else {
+                        //swipe up
+                        MainActivity.announce("single fling up");
+                    }
+                }
             }
         }
         return false;
@@ -58,13 +68,23 @@ class SingleGestureListener implements
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-        MainActivity.announce("single single tap confirmed");
+        MainActivity.lastSingleGesture = System.currentTimeMillis();
+        if (MainActivity.lastSingleGesture - MainActivity.lastTripleGesture > 500 && MainActivity.lastTripleGesture != 0) {
+            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500 && MainActivity.lastDoubleGesture != 0) {
+                MainActivity.announce("single single tap confirmed");
+            }
+        }
         return false;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
-        MainActivity.announce("single double tap confirmed");
+        MainActivity.lastSingleGesture = System.currentTimeMillis();
+        if (MainActivity.lastSingleGesture - MainActivity.lastTripleGesture > 500 && MainActivity.lastTripleGesture != 0) {
+            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500 && MainActivity.lastDoubleGesture != 0) {
+                MainActivity.announce("single double tap confirmed");
+            }
+        }
         //System.out.printf("DEBUGGING TAG: single double tap confirmed");
         return false;
     }
