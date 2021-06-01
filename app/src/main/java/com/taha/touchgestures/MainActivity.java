@@ -26,12 +26,14 @@ public class MainActivity extends AppCompatActivity {
     public static long lastSingleGesture = 0;
     public static long lastDoubleGesture = 0;
     public static long lastTripleGesture = 0;
+    public static String lastDetectedGesture;
     int[] pointerID;
     int[] pointerIndex;
     SingleGestureListener mSingleGestureListener = new SingleGestureListener();
 
     public static void announce(String string) {
         MainActivity.mDetectedGesture.setText(string);
+        lastDetectedGesture = string;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,26 +59,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 //System.out.println("DEBUGGING TAG: " + motionEvent.getPointerCount());
-                try {
-                    mTouchEventView.setText(String.valueOf(motionEvent.getActionMasked()));
-                } catch (Exception e) {
-                    System.out.println("BUG: " + e.getMessage());
-                }
+                mTouchEventView.setText(MotionEvent.actionToString(motionEvent.getActionMasked()));
 
-                if (motionEvent.getPointerCount() == 3) {
+                /*String previousEvent = MotionEvent.actionToString(motionEvent.getAction());
+                if(previousEvent != MotionEvent.actionToString(motionEvent.getAction())){
+                    System.out.println("actionToString: " + MotionEvent.actionToString(motionEvent.getAction()));
+                }*/
+
+
+                /*if (motionEvent.getPointerCount() == 3) {
                     mTripleGestureListener.onTouchEvent(motionEvent);
                     if (mTripleGestureListener.getEvent() != mTripleGestureListener.NO_ACTION) {
                         lastTripleGesture = System.currentTimeMillis();
                         announce(mTripleGestureListener.getActionMasked());
                     }
                     return true;
-                } else if (motionEvent.getPointerCount() == 2) {
+                } else */
+                if (motionEvent.getPointerCount() == 2) {
                     mDoubleGestureListener.onTouchEvent(motionEvent);
-                    if(mDoubleGestureListener.getEvent() != mDoubleGestureListener.NO_ACTION) {
+                    if (mDoubleGestureListener.getEvent() != mDoubleGestureListener.NO_ACTION) {
                         lastDoubleGesture = System.currentTimeMillis();
-                        if (lastDoubleGesture - lastTripleGesture > 500 && lastTripleGesture != 0) {
-                            announce(mDoubleGestureListener.getActionMasked());
-                        }
+                        announce(mDoubleGestureListener.getActionMasked());
                     }
                     return true;
                 } else if (motionEvent.getPointerCount() == 1) {
