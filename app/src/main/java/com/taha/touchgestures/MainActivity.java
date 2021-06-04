@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         mSingleGestureDetector = new GestureDetectorCompat(this, mSingleGestureListener);
         DoubleGestureListener mDoubleGestureListener = new DoubleGestureListener();
-        TripleGestureListener mTripleGestureListener = new TripleGestureListener();
+        //TripleGestureListener mTripleGestureListener = new TripleGestureListener();
 
         pointerID = new int[3];
         pointerIndex = new int[3];
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 //System.out.println("DEBUGGING TAG: " + motionEvent.getPointerCount());
                 mTouchEventView.setText(MotionEvent.actionToString(motionEvent.getActionMasked()));
-
+                System.out.println("TESTING ACTION: " + motionEvent.getActionMasked() + ": " + MotionEvent.actionToString(motionEvent.getActionMasked()));
                 /*String previousEvent = MotionEvent.actionToString(motionEvent.getAction());
                 if(previousEvent != MotionEvent.actionToString(motionEvent.getAction())){
                     System.out.println("actionToString: " + MotionEvent.actionToString(motionEvent.getAction()));
