@@ -31,7 +31,7 @@ class SingleGestureListener implements
     @Override
     public void onLongPress(MotionEvent motionEvent) {
         MainActivity.lastSingleGesture = System.currentTimeMillis();
-            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 200) {
+            if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
                 MainActivity.announce("single long tap confirmed");
             }
         System.out.printf("DEBUGGING TAG: single long tap confirmed");
@@ -40,7 +40,7 @@ class SingleGestureListener implements
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         MainActivity.lastSingleGesture = System.currentTimeMillis();
-        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 200) {
+        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
             if (Math.abs(velocityX) > 2 * Math.abs(velocityY)) {
                 if (velocityX > 0) {
                     //swipe right
@@ -65,8 +65,7 @@ class SingleGestureListener implements
     @Override
     public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
         MainActivity.lastSingleGesture = System.currentTimeMillis();
-        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 200 &&
-                MainActivity.lastDetectedGesture != "DOUBLE_SINGLE_TAP_CONFIRMED") {
+        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
             MainActivity.announce("single single tap confirmed");
         }
         return false;
@@ -75,10 +74,9 @@ class SingleGestureListener implements
     @Override
     public boolean onDoubleTap(MotionEvent motionEvent) {
         MainActivity.lastSingleGesture = System.currentTimeMillis();
-        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 200) {
+        if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
             MainActivity.announce("single double tap confirmed");
         }
-        //System.out.printf("DEBUGGING TAG: single double tap confirmed");
         return false;
     }
 

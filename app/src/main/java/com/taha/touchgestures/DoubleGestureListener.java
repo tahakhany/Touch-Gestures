@@ -90,7 +90,6 @@ public class DoubleGestureListener implements Runnable {
                 System.out.println("TESTING ACTION THREAD: " + getActionMasked());
             }
         } else if (mEvent.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
-
             numTimesTouched++;
             try {
                 Thread.sleep(MAXIMUM_TOUCH_DURATION);
