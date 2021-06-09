@@ -16,7 +16,6 @@ public class DoubleGestureListener implements Runnable {
     private long mPreviousTapTime = 0;
     private long mFirstSingleTapTime = 0;
     private long mSecondSingleTapTime = 0;
-    private final long mActionDownEnd = 0;
     private long mActionDownStart = 0;
 
     public DoubleGestureListener() {
