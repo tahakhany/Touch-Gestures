@@ -1,8 +1,14 @@
 package com.taha.touchgestures;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,16 +34,61 @@ public class MainActivity extends AppCompatActivity {
     public static long lastDoubleGesture = 0;
     public static String lastDetectedGesture;
     public static ContentResolver mContentResolver;
+    private static AudioManager audioManager;
     public static Window mWindow;
+    private static BluetoothAdapter BluetoothAdapter;
+    private static PackageManager packageManager;
+    private static CameraManager cameraManager;
+    private static boolean torchStat = false;
     final String TAG = "DEBUGGING TAG ";
     GestureDetectorCompat mSingleGestureDetector;
-    private int mBrightness;
     SingleGestureListener mSingleGestureListener = new SingleGestureListener();
+    private int mBrightness;
 
     public static void announce(String string) {
         MainActivity.mDetectedGesture.setText(string);
         lastDetectedGesture = string;
     }
+
+    public static void changeVolume(Boolean isUp) {
+        if (isUp)
+            audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND);
+        else {
+            audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+        }
+        System.out.println("AUDIO DEBUGGING: " + audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+    }
+
+    public static void toggleBluetooth() {
+        try {
+            if (BluetoothAdapter.isEnabled()) BluetoothAdapter.disable();
+            else BluetoothAdapter.enable();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void toggleFlashlight(Boolean isBlinking) {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+            try {
+                if (isBlinking) {
+                    torchStat = !torchStat;
+                    while (torchStat) {
+                        cameraManager.setTorchMode(cameraManager.getCameraIdList()[0], true);
+                        Thread.sleep(250);
+                        cameraManager.setTorchMode(cameraManager.getCameraIdList()[0], false);
+                        Thread.sleep(250);
+                    }
+                } else {
+                    torchStat = !torchStat;
+                    cameraManager.setTorchMode(cameraManager.getCameraIdList()[0], torchStat);
+                }
+            } catch (CameraAccessException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -53,6 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
         mContentResolver = getContentResolver();
         mWindow = getWindow();
+
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+
+        BluetoothAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
+
+        packageManager = this.getPackageManager();
+
+        cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.System.canWrite(this)) {

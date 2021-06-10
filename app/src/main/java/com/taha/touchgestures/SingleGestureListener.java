@@ -1,16 +1,23 @@
 package com.taha.touchgestures;
 
 import android.content.ContentResolver;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.RequiresApi;
+
 class SingleGestureListener implements
         GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener {
 
+    private final Boolean VOLUME_UP = true;
+    private final Boolean VOLUME_DOWN = false;
+    private final int SCROLL_THREASHOLD = 10;
+    private int currentAudioThreashold = 0;
     private int mBrightness;
     private ContentResolver mContentResolver;
     private Window mWindow;
@@ -30,6 +37,7 @@ class SingleGestureListener implements
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float distanceX, float distanceY) {
         MainActivity.lastSingleGesture = System.currentTimeMillis();
@@ -43,11 +51,22 @@ class SingleGestureListener implements
                     MainActivity.mXDistanceView.setText(String.valueOf(distanceX));
                     MainActivity.mYDistanceView.setText("0.0");
 
+                    currentAudioThreashold += distanceX;
+                    if (Math.abs(currentAudioThreashold) >= SCROLL_THREASHOLD) {
+                        currentAudioThreashold = 0;
+                        MainActivity.changeVolume(VOLUME_DOWN);
+                    }
                 } else {
-                    //scroll wright
+                    //scroll right
                     MainActivity.announce("single scroll right");
                     MainActivity.mXDistanceView.setText(String.valueOf(distanceX));
                     MainActivity.mYDistanceView.setText("0.0");
+
+                    currentAudioThreashold += distanceX;
+                    if (Math.abs(currentAudioThreashold) >= SCROLL_THREASHOLD) {
+                        currentAudioThreashold = 0;
+                        MainActivity.changeVolume(VOLUME_UP);
+                    }
                 }
             } else if (Math.abs(distanceY) > 2 * Math.abs(distanceX)) {
 
@@ -104,6 +123,7 @@ class SingleGestureListener implements
         MainActivity.lastSingleGesture = System.currentTimeMillis();
         if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
             MainActivity.announce("single long tap confirmed");
+            MainActivity.toggleFlashlight(false);
         }
         System.out.printf("DEBUGGING TAG: single long tap confirmed");
     }
@@ -127,6 +147,7 @@ class SingleGestureListener implements
         MainActivity.lastSingleGesture = System.currentTimeMillis();
         if (MainActivity.lastSingleGesture - MainActivity.lastDoubleGesture > 500) {
             MainActivity.announce("single double tap confirmed");
+            MainActivity.toggleBluetooth();
         }
         return false;
     }

@@ -86,6 +86,7 @@ public class DoubleGestureListener implements Runnable {
                 mActionDownStart = getCurrentTime();
             } else if (getCurrentTime() - mActionDownStart >= MAXIMUM_TOUCH_DURATION) {
                 setAction(DOUBLE_LONG_TAP);
+                MainActivity.toggleFlashlight(true);
                 System.out.println("TESTING ACTION THREAD: " + getActionMasked());
             }
         } else if (mEvent.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
