@@ -16,8 +16,8 @@ class SingleGestureListener implements
 
     private final Boolean VOLUME_UP = true;
     private final Boolean VOLUME_DOWN = false;
-    private final int SCROLL_THREASHOLD = 10;
-    private int currentAudioThreashold = 0;
+    private final int SCROLL_THRESHOLD = 10;
+    private int currentAudioThreshold = 0;
     private int mBrightness;
     private ContentResolver mContentResolver;
     private Window mWindow;
@@ -51,9 +51,9 @@ class SingleGestureListener implements
                     MainActivity.mXDistanceView.setText(String.valueOf(distanceX));
                     MainActivity.mYDistanceView.setText("0.0");
 
-                    currentAudioThreashold += distanceX;
-                    if (Math.abs(currentAudioThreashold) >= SCROLL_THREASHOLD) {
-                        currentAudioThreashold = 0;
+                    currentAudioThreshold += distanceX;
+                    if (Math.abs(currentAudioThreshold) >= SCROLL_THRESHOLD) {
+                        currentAudioThreshold = 0;
                         MainActivity.changeVolume(VOLUME_DOWN);
                     }
                 } else {
@@ -62,9 +62,9 @@ class SingleGestureListener implements
                     MainActivity.mXDistanceView.setText(String.valueOf(distanceX));
                     MainActivity.mYDistanceView.setText("0.0");
 
-                    currentAudioThreashold += distanceX;
-                    if (Math.abs(currentAudioThreashold) >= SCROLL_THREASHOLD) {
-                        currentAudioThreashold = 0;
+                    currentAudioThreshold += distanceX;
+                    if (Math.abs(currentAudioThreshold) >= SCROLL_THRESHOLD) {
+                        currentAudioThreshold = 0;
                         MainActivity.changeVolume(VOLUME_UP);
                     }
                 }
